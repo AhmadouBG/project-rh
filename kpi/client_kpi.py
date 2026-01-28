@@ -40,7 +40,7 @@ def count_active_clients_with_recent_payrolls(days=30):
 
 
 
-def get_new_clients_by_month(db):
+def get_new_clients_by_month():
     """
     KPI: Nombre de nouveaux clients par mois
     """
