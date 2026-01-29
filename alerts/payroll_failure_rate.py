@@ -1,12 +1,12 @@
 def payroll_failure_alert(kpi_results, threshold=5):
     alerts = []
-
     for row in kpi_results:
-        if row["failure_rate"] > threshold:
+        print(row['day'], row['taux_echec'])
+        if row["taux_echec"] > threshold:
             alerts.append({
                 "day": row["day"],
                 "alert": "Payroll failure rate exceeded threshold",
-                "value": row["failure_rate"]
+                "value": row["taux_echec"]
             })
 
     return alerts

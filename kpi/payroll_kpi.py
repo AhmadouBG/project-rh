@@ -61,31 +61,29 @@ def taux_fail_payroll_by_client_month():
     """
     return [
             {
-            "$group": {
-            "_id": 0,
-            "total": { "$sum": 1 },
-            "failed": {
-                "$sum": {
-                "$cond": [{ "$eq": ["$status", "failed"] }, 1, 0]
+                "$group": {
+                "_id": "$day",
+                "total": { "$sum": 1 },
+                "failed": {
+                    "$sum": {
+                    "$cond": [{ "$eq": ["$status", "failed"] }, 1, 0]
+                    }
                 }
-            }
-            }
-        },
-        {
-            "$project": {
-            "_id": 0,
-            "day": "$_id",
-            "taux_echec": {
-                "$multiply": [
-                { "$divide": ["$failed", "$total"] },
-                100
-                ]
-            }   
-            }
-        },
-        { "$sort": { "day": 1 } }
-
-    ]
+                }
+            },
+            {
+                "$project": {
+                "day": "$_id",
+                "taux_echec": {
+                    "$multiply": [
+                    { "$divide": ["$failed", "$total"] },
+                    100
+                    ]
+                }
+                }
+            },
+            { "$sort": { "day": 1 } }
+        ]
 
              
 

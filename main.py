@@ -4,16 +4,18 @@ from kpi.client_kpi import count_active_clients_with_recent_payrolls, get_new_cl
 from pymongo import MongoClient
 from kpi.payroll_kpi import count_payroll_by_client_month, taux_fail_payroll_by_client_month
 
+# Connect to MongoDB
 client = MongoClient("mongodb://localhost:27017")
 db = client["database_rh"]
-
-kpi_client1 = db.clients.aggregate(count_active_clients_with_recent_payrolls(30))
-kpi_client2 = db.clients.aggregate(get_new_clients_by_month())
-
-kpi_payroll1 = db.payrolls.aggregate(count_payroll_by_client_month())
-kpi_payroll2 = db.payrolls.aggregate(taux_fail_payroll_by_client_month())
-
-kpi_application1 = db.applications.aggregate(flux_daily_application_by_client())
+# conversions en list des kpi pour reutilisation CommandCursor(peut etre parcouru une seule fois)
+# KPI Clients
+kpi_client1 = list(db.clients.aggregate(count_active_clients_with_recent_payrolls(30)))
+kpi_client2 = list(db.clients.aggregate(get_new_clients_by_month()))
+# KPI Payrolls 
+kpi_payroll1 = list(db.payrolls.aggregate(count_payroll_by_client_month()))
+kpi_payroll2 = list(db.payrolls.aggregate(taux_fail_payroll_by_client_month()))
+# KPI Applications
+kpi_application1 = list(db.applications.aggregate(flux_daily_application_by_client()))
 
 for row in kpi_client1:
     print(f"Clients actifs (30 par défaut): {row['active_clients']}")
@@ -31,8 +33,9 @@ for row in kpi_application1:
     print(f"Client: {row['clientName']}, Jour: {row['day']}, Nombre d'applications: {row['application_count']}")
 
 
-#alerts_threshold = 20.0  # Example threshold for payroll failure rate
+#alerts_threshold = 5.0  # Example threshold for payroll failure rate
 
 payroll_failure_alerts = payroll_failure_alert(kpi_payroll2, threshold=5)
 for alert in payroll_failure_alerts:
     print(f"Alerte le {alert['day']}: {alert['alert']} (Valeur: {alert['value']:.2f}%)")
+    
