@@ -63,7 +63,6 @@ def taux_fail_payroll_by_client_month():
             {
             "$group": {
             "_id": 0,
-            "day": "$_id",
             "total": { "$sum": 1 },
             "failed": {
                 "$sum": {
@@ -74,6 +73,7 @@ def taux_fail_payroll_by_client_month():
         },
         {
             "$project": {
+            "_id": 0,
             "day": "$_id",
             "taux_echec": {
                 "$multiply": [

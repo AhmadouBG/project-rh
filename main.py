@@ -1,3 +1,4 @@
+from alerts.payroll_failure_rate import payroll_failure_alert
 from kpi.application_kpi import flux_daily_application_by_client
 from kpi.client_kpi import count_active_clients_with_recent_payrolls, get_new_clients_by_month
 from pymongo import MongoClient
@@ -28,3 +29,10 @@ for row in kpi_payroll2:
 
 for row in kpi_application1:
     print(f"Client: {row['clientName']}, Jour: {row['day']}, Nombre d'applications: {row['application_count']}")
+
+
+#alerts_threshold = 20.0  # Example threshold for payroll failure rate
+
+payroll_failure_alerts = payroll_failure_alert(kpi_payroll2, threshold=5)
+for alert in payroll_failure_alerts:
+    print(f"Alerte le {alert['day']}: {alert['alert']} (Valeur: {alert['value']:.2f}%)")
