@@ -1,0 +1,326 @@
+{
+  "collections": {
+    "database_rh.applications": {
+      "ns": "database_rh.applications",
+      "jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "clientId",
+          "createdAt",
+          "status"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "clientId": {
+            "bsonType": "objectId"
+          },
+          "createdAt": {
+            "bsonType": "date"
+          },
+          "status": {
+            "bsonType": "string"
+          }
+        }
+      }
+    },
+    "database_rh.clients": {
+      "ns": "database_rh.clients",
+      "jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "createdAt",
+          "name",
+          "status"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "createdAt": {
+            "bsonType": "date"
+          },
+          "name": {
+            "bsonType": "string"
+          },
+          "status": {
+            "bsonType": "string"
+          }
+        }
+      }
+    },
+    "database_rh.documents": {
+      "ns": "database_rh.documents",
+      "jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "clientId",
+          "createdAt",
+          "file",
+          "generated",
+          "type"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "clientId": {
+            "bsonType": "objectId"
+          },
+          "createdAt": {
+            "bsonType": "date"
+          },
+          "file": {
+            "bsonType": "object",
+            "properties": {
+              "size_bytes": {
+                "bsonType": "double"
+              }
+            },
+            "required": [
+              "size_bytes"
+            ]
+          },
+          "generated": {
+            "bsonType": "bool"
+          },
+          "type": {
+            "bsonType": "string"
+          }
+        }
+      }
+    },
+    "database_rh.employees": {
+      "ns": "database_rh.employees",
+      "jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "clientId",
+          "createdAt",
+          "name",
+          "status"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "clientId": {
+            "bsonType": "objectId"
+          },
+          "createdAt": {
+            "bsonType": "date"
+          },
+          "name": {
+            "bsonType": "string"
+          },
+          "status": {
+            "bsonType": "string"
+          }
+        }
+      }
+    },
+    "database_rh.payroll_reports": {
+      "ns": "database_rh.payroll_reports",
+      "jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "clientId",
+          "createdAt",
+          "month",
+          "totalEmployees",
+          "totalNet"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "clientId": {
+            "bsonType": "objectId"
+          },
+          "createdAt": {
+            "bsonType": "date"
+          },
+          "month": {
+            "bsonType": "string"
+          },
+          "totalEmployees": {
+            "bsonType": "int"
+          },
+          "totalNet": {
+            "bsonType": "int"
+          }
+        }
+      }
+    },
+    "database_rh.payrolls": {
+      "ns": "database_rh.payrolls",
+      "jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "clientId",
+          "createdAt",
+          "day",
+          "employeeId",
+          "month",
+          "netSalary",
+          "status"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "clientId": {
+            "bsonType": "objectId"
+          },
+          "createdAt": {
+            "bsonType": "date"
+          },
+          "day": {
+            "bsonType": "string"
+          },
+          "employeeId": {
+            "bsonType": "objectId"
+          },
+          "month": {
+            "bsonType": "string"
+          },
+          "netSalary": {
+            "bsonType": "int"
+          },
+          "status": {
+            "bsonType": "string"
+          }
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "id": "6e2e06e2-de6d-4f5f-83b3-f0a2e9ecb192",
+      "relationship": [
+        {
+          "ns": "database_rh.applications",
+          "fields": [
+            "clientId"
+          ],
+          "cardinality": 1
+        },
+        {
+          "ns": "database_rh.clients",
+          "fields": [
+            "_id"
+          ],
+          "cardinality": 1
+        }
+      ],
+      "isInferred": true
+    },
+    {
+      "id": "8f00fbff-207e-46cd-8894-56759252fc6f",
+      "relationship": [
+        {
+          "ns": "database_rh.documents",
+          "fields": [
+            "clientId"
+          ],
+          "cardinality": 1
+        },
+        {
+          "ns": "database_rh.clients",
+          "fields": [
+            "_id"
+          ],
+          "cardinality": 1
+        }
+      ],
+      "isInferred": true
+    },
+    {
+      "id": "2ad7435e-a2cb-4496-ab33-ef4b19ca70b4",
+      "relationship": [
+        {
+          "ns": "database_rh.employees",
+          "fields": [
+            "clientId"
+          ],
+          "cardinality": 1
+        },
+        {
+          "ns": "database_rh.clients",
+          "fields": [
+            "_id"
+          ],
+          "cardinality": 1
+        }
+      ],
+      "isInferred": true
+    },
+    {
+      "id": "fc1cf1be-72f0-4fc0-95f8-737a7dd536d2",
+      "relationship": [
+        {
+          "ns": "database_rh.payroll_reports",
+          "fields": [
+            "clientId"
+          ],
+          "cardinality": 1
+        },
+        {
+          "ns": "database_rh.clients",
+          "fields": [
+            "_id"
+          ],
+          "cardinality": 1
+        }
+      ],
+      "isInferred": true
+    },
+    {
+      "id": "5a73af1b-ed07-442d-aaa7-dcdddb0e1d3d",
+      "relationship": [
+        {
+          "ns": "database_rh.payrolls",
+          "fields": [
+            "clientId"
+          ],
+          "cardinality": 1
+        },
+        {
+          "ns": "database_rh.clients",
+          "fields": [
+            "_id"
+          ],
+          "cardinality": 1
+        }
+      ],
+      "isInferred": true
+    },
+    {
+      "id": "e04c3c76-5445-4db1-9f65-def6d5b3b8c9",
+      "relationship": [
+        {
+          "ns": "database_rh.payrolls",
+          "fields": [
+            "employeeId"
+          ],
+          "cardinality": 1
+        },
+        {
+          "ns": "database_rh.employees",
+          "fields": [
+            "_id"
+          ],
+          "cardinality": 1
+        }
+      ],
+      "isInferred": true
+    }
+  ]
+}

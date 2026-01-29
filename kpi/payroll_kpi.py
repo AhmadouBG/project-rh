@@ -1,91 +1,107 @@
+from typing import List, Dict, Any
 
 
-
-
-def count_payroll_by_client_month():
-
+def count_payroll_by_client_month() -> List[Dict[str, Any]]:
     """
-     KPI: Nombre de fiches de paie générées par client / par mois
-
+    KPI: Nombre de paies générées par client par mois.
     """
     return [
-
-        # Ajouter le champ month (YYYY-MM)
         {
             "$addFields": {
-            "month": {
-                "$dateToString": { "format": "%Y-%m", "date": "$createdAt" }
-            }
-            }
-        },
-
-        # Grouper par client + mois
-        {
-            "$group": {
-            "_id": {
-                "clientId": "$clientId",
-                "month": "$month"
-            },
-            "payroll_count": { "$sum": 1 }
-            }
-        },
-
-        #  Lookup pour le nom du client
-        {
-            "$lookup": {
-            "from": "clients",
-            "localField": "_id.clientId",
-            "foreignField": "_id",
-            "as": "client"
-            }
-        },
-        { "$unwind": "$client" },
-        # Projection propre
-        {
-            "$project": {
-            "_id": 0,
-            "clientId": "$_id.clientId",
-            "clientName": "$client.name",
-            "month": "$_id.month",
-            "payroll_count": 1
-            }
-        },
-
-        # Tri chronologique
-        { "$sort": { "month": 1 } }
-    ]
-
-def taux_fail_payroll_by_client_month():
-    """
-    KPI: Taux d'échec de fiches de paie par jour
-    """
-    return [
-            {
-                "$group": {
-                "_id": "$day",
-                "total": { "$sum": 1 },
-                "failed": {
-                    "$sum": {
-                    "$cond": [{ "$eq": ["$status", "failed"] }, 1, 0]
+                "month": {
+                    "$dateToString": {
+                        "format": "%Y-%m",
+                        "date": "$createdAt",
                     }
                 }
-                }
-            },
-            {
-                "$project": {
-                "day": "$_id",
-                "taux_echec": {
-                    "$multiply": [
-                    { "$divide": ["$failed", "$total"] },
-                    100
-                    ]
-                }
-                }
-            },
-            { "$sort": { "day": 1 } }
-        ]
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "client_id": "$clientId",
+                    "month": "$month",
+                },
+                "payroll_count": {"$sum": 1},
+            }
+        },
+        {
+            "$lookup": {
+                "from": "clients",
+                "localField": "_id.client_id",
+                "foreignField": "_id",
+                "as": "client",
+            }
+        },
+        {
+            "$unwind": "$client"
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "client_id": "$_id.client_id",
+                "client_name": "$client.name",
+                "month": "$_id.month",
+                "payroll_count": 1,
+            }
+        },
+        {
+            "$sort": {"month": 1}
+        },
+    ]
 
-             
+
+def failure_rate_payroll_by_client_month() -> List[Dict[str, Any]]:
+    """
+    KPI: Taux d'échec de la paie par client et par mois.
+    """
+    return [
+        {
+            "$addFields": {
+                "month": {
+                    "$dateToString": {
+                        "format": "%Y-%m",
+                        "date": "$createdAt",
+                    }
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "client_id": "$clientId",
+                    "month": "$month",
+                },
+                "total": {"$sum": 1},
+                "failed": {
+                    "$sum": {
+                        "$cond": [
+                            {"$eq": ["$status", "failed"]},
+                            1,
+                            0,
+                        ]
+                    }
+                },
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "client_id": "$_id.client_id",
+                "month": "$_id.month",
+                "failure_rate": {
+                    "$multiply": [
+                        {"$divide": ["$failed", "$total"]},
+                        100,
+                    ]
+                },
+            }
+        },
+        {
+            "$sort": {"month": 1}
+        },
+    ]
+
 
              
 

@@ -1,17 +1,20 @@
 from datetime import datetime, timedelta
+from typing import List, Dict, Any
 
-def count_active_clients_with_recent_payrolls(days=30):
-    """
-    KPI: Nombre de clients actifs ayant généré au moins un payroll
-    sur les X derniers jours (30 par défaut)
-    """
 
+def count_active_clients_with_recent_payrolls(
+    days: int = 30,
+) -> List[Dict[str, Any]]:
+    """
+    KPI: Nombre de clients actifs ayant généré au moins une paie
+    au cours des `days` derniers jours (par défaut : 30).
+    """
     start_date = datetime.utcnow() - timedelta(days=days)
 
     return [
         {
             "$match": {
-                "status": "active"
+                "status": "active",
             }
         },
         {
@@ -19,7 +22,7 @@ def count_active_clients_with_recent_payrolls(days=30):
                 "from": "payrolls",
                 "localField": "_id",
                 "foreignField": "clientId",
-                "as": "payrolls"
+                "as": "payrolls",
             }
         },
         {
@@ -27,39 +30,40 @@ def count_active_clients_with_recent_payrolls(days=30):
                 "payrolls": {
                     "$elemMatch": {
                         "createdAt": {
-                            "$gte": start_date
+                            "$gte": start_date,
                         }
                     }
                 }
             }
         },
         {
-            "$count": "active_clients"
-        }
+            "$count": "active_clients",
+        },
     ]
 
 
-
-def get_new_clients_by_month():
+def get_new_clients_by_month() -> List[Dict[str, Any]]:
     """
-    KPI: Nombre de nouveaux clients par mois
+    KPI: Numbre de nouveaux clients par mois.
     """
     return [
-        # Extraire le mois de création
         {
             "$addFields": {
                 "month": {
-                    "$dateToString": { "format": "%Y-%m", "date": "$createdAt" }
+                    "$dateToString": {
+                        "format": "%Y-%m",
+                        "date": "$createdAt",
+                    }
                 }
             }
         },
-        # Grouper par mois et compter les clients
         {
             "$group": {
                 "_id": "$month",
-                "new_clients": { "$sum": 1 }
+                "new_clients": {"$sum": 1},
             }
         },
-        # Trier chronologiquement
-        { "$sort": { "_id": 1 } }
+        {
+            "$sort": {"_id": 1},
+        },
     ]

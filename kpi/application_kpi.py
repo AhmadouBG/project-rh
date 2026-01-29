@@ -1,23 +1,37 @@
-def flux_daily_application_by_client():
+from typing import List, Dict, Any
+
+
+def flux_daily_application_by_client() -> List[Dict[str, Any]]:
     """
-    KPI: Flux quotidien des applications par client
+    KPI: Daily number of applications per client.
+    Groups applications by client and day.
     """
     return [
         {
+            "$addFields": {
+                "day": {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date": "$createdAt",
+                    }
+                }
+            }
+        },
+        {
             "$group": {
                 "_id": {
-                    "clientId": "$clientId",
-                    "day": { "$dateToString": { "format": "%Y-%m-%d", "date": "$createdAt" } }
+                    "client_id": "$clientId",
+                    "day": "$day",
                 },
-                "application_count": { "$sum": 1 }
+                "application_count": {"$sum": 1},
             }
         },
         {
             "$lookup": {
                 "from": "clients",
-                "localField": "_id.clientId",
+                "localField": "_id.client_id",
                 "foreignField": "_id",
-                "as": "client"
+                "as": "client",
             }
         },
         {
@@ -25,10 +39,13 @@ def flux_daily_application_by_client():
         },
         {
             "$project": {
-                "clientName": "$client.name",
+                "_id": 0,
+                "client_name": "$client.name",
                 "day": "$_id.day",
-                "application_count": 1
+                "application_count": 1,
             }
         },
-        { "$sort": { "day": 1 } }
+        {
+            "$sort": {"day": 1}
+        },
     ]
