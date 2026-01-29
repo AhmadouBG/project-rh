@@ -1,0 +1,3 @@
+pymongo
+datadog
+python-dotenv
