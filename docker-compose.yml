@@ -24,7 +24,7 @@ services:
     image: gcr.io/datadoghq/agent:7
     container_name: dd-agent
     environment:
-      DD_API_KEY: a6015a0c0039b33337162bf5d98ccb70
+      DD_API_KEY: ${API_KEY_DATA_DOG}
       DD_SITE: us5.datadoghq.com
       DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
     volumes:
