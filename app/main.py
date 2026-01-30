@@ -6,6 +6,8 @@ from kpi.client_kpi import count_active_clients_with_recent_payrolls, get_new_cl
 from kpi.doc_kpi import document_average_size_by_type
 from kpi.payroll_kpi import count_payroll_by_client_month, failure_rate_payroll_by_client_month
 import os
+from monitoring.datadog_init import init_datadog
+from monitoring.datadog_metric import send_payroll_failure_rate
 
 def main():
     # =========================
@@ -76,6 +78,21 @@ def main():
     print("\n=== Alertes Taille des Documents ===")
     for alert in doc_size_alerts:
         print(f"Alerte pour le type {alert['type']}: {alert['alert']} (Taille moyenne: {alert['avg_size']:.2f} bytes)")
+
+    # =========================
+    # Send metrics to Datadog
+    # =========================
+    # Initialize Datadog
+    init_datadog()
+    for row in payroll_alerts:
+        send_payroll_failure_rate(
+            day=row["day"],
+            taux_echec=row["failure_rate"]
+        )
+
+
+
+
 
 
 if __name__ == "__main__":
