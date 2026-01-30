@@ -6,8 +6,10 @@ services:
     container_name: kpi_app
     depends_on:
       - mongo
+      - datadog
     environment:
       MONGO_URI: mongodb://mongo:27017/mydb
+      DD_AGENT_HOST: datadog
     volumes:
       - ./app:/app
     command: python main.py
@@ -17,3 +19,18 @@ services:
     container_name: mongo
     ports:
       - "27017:27017"
+
+  datadog:
+    image: gcr.io/datadoghq/agent:7
+    container_name: dd-agent
+    environment:
+      DD_API_KEY: a6015a0c0039b33337162bf5d98ccb70
+      DD_SITE: us5.datadoghq.com
+      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    ports:
+      - "8125:8125/udp"

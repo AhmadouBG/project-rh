@@ -5,13 +5,14 @@ from kpi.application_kpi import flux_daily_application_by_client
 from kpi.client_kpi import count_active_clients_with_recent_payrolls, get_new_clients_by_month
 from kpi.doc_kpi import document_average_size_by_type
 from kpi.payroll_kpi import count_payroll_by_client_month, failure_rate_payroll_by_client_month
-
+import os
 
 def main():
     # =========================
     # Connect to MongoDB
     # =========================
-    client = MongoClient("mongodb://localhost:27017")
+    MONGO_URI = os.getenv("MONGO_URI")
+    client = MongoClient(MONGO_URI)
     db = client["database_rh"]
 
     # =========================
